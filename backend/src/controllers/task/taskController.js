@@ -116,4 +116,35 @@ export const updateTask = asyncHandler(async(req, res) => {
         console.log("Error in updateTask: ", error.message);
         res.status(500).json({ message: error.message });
     }
+});
+
+export const deleteTask = asyncHandler(async(req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const { id } = req.params;
+
+        if(!id){
+            res.status(400).json({ message: "Task id is required" });
+        }
+
+        const task = await TaskModel.findById(id);
+
+        if(!task){
+            res.status(404).json({ message: "Task not found" });
+        }
+
+        // check if the user is the owner of the task
+        if(!task.user.equals(userId)){
+            res.status(401).json({ message: "Not authorized" });
+        }
+
+        // delete task
+        await TaskModel.findByIdAndDelete(id);
+
+        return res.status(200).json({ message: "Task deleted successfully" });
+    } catch (error) {
+        console.log("Error in deleteTask: ", error.message);
+        res.status(500).json({ message: error.message });
+    }
 })
