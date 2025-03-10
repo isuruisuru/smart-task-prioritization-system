@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
 
     photo: {
       type: String,
-      default: "https://avatars.githubusercontent.com/u/19819005?v=4",
+      default: "https://upload.wikimedia.org/wikipedia/en/a/a6/SLIIT_Logo_Crest.png",
     },
 
     bio: {
