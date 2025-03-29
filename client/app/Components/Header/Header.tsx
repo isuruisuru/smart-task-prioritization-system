@@ -30,7 +30,7 @@ function Header() {
           )}
         </p>
       </div>
-      <div className="h-[50px] flex items-center gap-[10.4rem]" >
+      <div className="h-[50px] flex items-center ml-125 gap-[10.4rem]" >
             <button className="px-8 py-3 bg-[#3aafae] text-white rounded-[50px] hover:bg-[#00a1f1] hover:text-[#fff] transition-all duration-200 ease-in-out">
               Create a New Task
             </button>
