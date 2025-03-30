@@ -1,4 +1,5 @@
 import moment from "moment";
+import { Task } from "./types";
 
 export const formatTime = (createdAt: string) => {
     const now = moment();
@@ -25,4 +26,21 @@ export const formatTime = (createdAt: string) => {
     }
 
     return created.format("DD/MM/YYYY");
+}
+
+export const filteredTasks = (tasks: Task[], priority: string) => {
+    const filteredTasks = () => {
+        switch (priority) {
+            case "low":
+                return tasks.filter((task) => task.priority === "low");
+            case "medium":
+                return tasks.filter((task) => task.priority === "medium");
+            case "high":
+                return tasks.filter((task) => task.priority === "high");
+            default:
+                return tasks;
+        }
+    }
+
+    return filteredTasks();
 }

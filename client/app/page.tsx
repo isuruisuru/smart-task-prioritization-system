@@ -4,11 +4,14 @@ import { useTasks } from "@/context/taskContext";
 import Filters from "./Components/Filters/Filters";
 import TaskItem from "./Components/TaskItem/TaskItem";
 import { Task } from "@/utils/types";
+import { filteredTasks } from "@/utils/utilities";
 
 export default function Home() {
   useRedirect("/login");
 
-  const { tasks, openModalforAdd } = useTasks();
+  const { tasks, openModalforAdd, priority } = useTasks();
+
+  const filtered = filteredTasks(tasks, priority);
 
   return (
     <main className="m-6 h-full">
@@ -19,7 +22,7 @@ export default function Home() {
 
       <div className="pb-[2rem] mt-6 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[1.5rem]">
         {
-          tasks?.map((task: Task, i: number) => (
+          filtered.map((task: Task, i: number) => (
             <TaskItem key={i} task={task} />
           ))
         }
