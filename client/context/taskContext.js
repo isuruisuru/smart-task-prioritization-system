@@ -1,6 +1,7 @@
 import React, { createContext, useEffect } from "react";
 import axios from "axios";
 import { useUserContext } from "./userContext";
+import toast from "react-hot-toast";
 
 const TasksContext = createContext();
 
@@ -14,6 +15,34 @@ export const TasksProvider = ({ children }) => {
     const [task, setTask] = React.useState({});
 
     const [priority, setPriority] = React.useState("all");
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [activeTask, setActiveTask] = React.useState(null);
+    const [modalMode, setModalMode] = React.useState("");
+    const [profileModal, setProfileModal] = React.useState(false);
+
+    const openModalforAdd = () => {
+        setModalMode("add");
+        setIsEditing(true);
+        setTask({});
+    }
+    const openModalforEdit = (task) => {
+        setModalMode("edit");
+        setIsEditing(true);
+        setTask(task);
+        setTask({});
+    }
+
+    const openProfileModal = () => {
+        setProfileModal(true);
+    }   
+
+    const closeModal = () => {
+        setIsEditing(false);
+        setTask({});
+        setProfileModal(false);
+        setModalMode("");
+        setActiveTask(null);
+    }
 
     // get tasks
     const getTasks = async () => {
@@ -21,7 +50,7 @@ export const TasksProvider = ({ children }) => {
         try {
             const response = await axios.get(`${serverUrl}/tasks`);
 
-            setTasks(response.data);
+            setTasks(response.data.tasks);
         } catch (error) {
             console.log("Error getting tasks", error);
         }
@@ -48,6 +77,8 @@ export const TasksProvider = ({ children }) => {
             const response = await axios.post(`${serverUrl}/task/create`, task);
             console.log(response.data);
             setTasks([...tasks, response.data]);
+            toast.success("Task created successfully");
+            setIsEditing(false);
         } catch (error) {
             console.log("Error creating task", error);
         }
@@ -88,6 +119,14 @@ export const TasksProvider = ({ children }) => {
         setLoading(false);
     };
 
+    const handleInput = (name) => (e) => {
+        if(name === 'setTask'){
+            setTask(e)
+        } else {
+            setTask({ ...task, [name]: e.target.value });
+        }
+    }
+
 
     useEffect(() => {
         getTasks();
@@ -104,7 +143,14 @@ export const TasksProvider = ({ children }) => {
             updateTask,
             deleteTask,
             priority,
-            setPriority
+            setPriority,
+            handleInput,
+            isEditing,
+            setIsEditing,
+            openModalforAdd,
+            openModalforEdit,
+            activeTask,
+            closeModal
         }}>
             {children}
         </TasksContext.Provider>

@@ -8,7 +8,7 @@ import { Task } from "@/utils/types";
 export default function Home() {
   useRedirect("/login");
 
-  const { tasks } = useTasks()?.tasks;
+  const { tasks, openModalforAdd } = useTasks();
 
   return (
     <main className="m-6 h-full">
@@ -23,6 +23,10 @@ export default function Home() {
             <TaskItem key={i} task={task} />
           ))
         }
+        <button className="h-[16rem] w-full py-2 rounded-md text-lg font-medium text-gray-500 border-dashed border-2 border-gray-400 hover:bg-gray-300 hover:border-none transition duration-200 ease-in-out"
+          onClick={openModalforAdd}>
+          Add New Task
+        </button>
       </div>
     </main>
   );
