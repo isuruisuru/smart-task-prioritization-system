@@ -114,6 +114,8 @@ export const TasksProvider = ({ children }) => {
             // remove the task from the tasks array
             const newTasks = tasks.filter((tsk) => tsk._id !== taskId);
             setTasks(newTasks);
+
+            toast.success("Task deleted successfully");
         } catch (error) {
             console.log("Error deleting task", error);
         }
@@ -127,6 +129,12 @@ export const TasksProvider = ({ children }) => {
             setTask({ ...task, [name]: e.target.value });
         }
     }
+
+    // get completed tasks
+    const completedTasks = tasks.filter((task) => task.completed);
+
+    // get pending tasks
+    const activeTasks = tasks.filter((task) => !task.completed);
 
 
     useEffect(() => {
@@ -153,6 +161,9 @@ export const TasksProvider = ({ children }) => {
             activeTask,
             closeModal,
             modalMode,
+            openProfileModal,
+            completedTasks,
+            activeTasks
         }}>
             {children}
         </TasksContext.Provider>
