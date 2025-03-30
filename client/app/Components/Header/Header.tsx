@@ -3,9 +3,11 @@ import { useUserContext } from "@/context/userContext";
 import React from 'react'
 import Link from 'next/link';
 import { github, moon, profile } from "@/utils/icons";
+import { useTasks } from "@/context/taskContext";
 
 function Header() {
   const { user } = useUserContext();
+  const { activeTasks, openModalforAdd } = useTasks();
 
   const { name } = user;
 
@@ -23,7 +25,7 @@ function Header() {
         <p className="text-sm text-[#666]">
           {userId ? (
             <>You have{" "}
-            <span className="font-bold text-[#3aafae]">5</span> active tasks
+            <span className="font-bold text-[#3aafae]">{activeTasks.length}</span> active tasks
             </>
           ): (
             "Please login to view your tasks"
@@ -31,7 +33,9 @@ function Header() {
         </p>
       </div>
       <div className="h-[50px] flex items-center gap-[10.4rem]" >
-            <button className="px-8 py-3 bg-[#3aafae] text-white rounded-[50px] hover:bg-[#00a1f1] hover:text-[#fff] transition-all duration-200 ease-in-out">
+            <button className="px-8 py-3 bg-[#3aafae] text-white rounded-[50px] hover:bg-[#00a1f1] hover:text-[#fff] transition-all duration-200 ease-in-out cursor-pointer"
+            onClick={openModalforAdd}
+            >
               Create a New Task
             </button>
       </div>
