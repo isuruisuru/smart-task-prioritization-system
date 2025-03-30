@@ -34,13 +34,13 @@ function TaskItem({ task }: TaskItemProps) {
             </p>
             <div>
                 <div className='flex items-center gap-3 text-gray-400 text-[1.2rem]'>
-                    <button className={`${
+                    <button className={`cursor-pointer ${
                         task.completed ? "text-yellow-400" : "text-gray-400"
                     }`}>
                         {star}
                     </button>
-                    <button className='text-[#00a1f1]'>{edit}</button>
-                    <button className='text-[#f65314]'>{trash}</button>
+                    <button className='text-[#00a1f1] cursor-pointer'>{edit}</button>
+                    <button className='text-[#f65314] cursor-pointer'>{trash}</button>
                 </div>
             </div>
         </div>
