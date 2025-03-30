@@ -1,10 +1,12 @@
 "use client";
 import { useUserContext } from "@/context/userContext";
 import Image from "next/image";
-import React from 'react'
+import React from 'react';
+import { useTasks } from "@/context/taskContext";
 
 function Profile() {
     const { user } = useUserContext();
+    const { tasks, completedTasks, activeTasks } = useTasks();
 
   return (
     <div className="ml-3 mr-3">
@@ -33,28 +35,28 @@ function Profile() {
                     <p className="text-sm">Total Tasks:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-purple-500 rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">10</span>
+                    <span className="font-medium text-3xl text-[#333]">{tasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
                     <p className="text-sm">In Progress:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-[#3AAFAE] rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">11</span>
+                    <span className="font-medium text-3xl text-[#333]">{activeTasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
                     <p className="text-sm">Open Tasks:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-400 rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">10</span>
+                    <span className="font-medium text-3xl text-[#333]">{activeTasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
                     <p className="text-sm">Completed:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-green-400 rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">10</span>
+                    <span className="font-medium text-3xl text-[#333]">{completedTasks.length}</span>
                     </p>
                 </div>
             </div>

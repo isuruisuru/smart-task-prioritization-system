@@ -49,7 +49,10 @@ function TaskItem({ task }: TaskItemProps) {
                          openModalforEdit(task);   
                         }}
                         >{edit}</button>
-                    <button className='text-[#f65314] cursor-pointer'>{trash}</button>
+                    <button 
+                        className='text-[#f65314] cursor-pointer'
+                        onClick={() => deleteTask(task._id)}
+                        >{trash}</button>
                 </div>
             </div>
         </div>
