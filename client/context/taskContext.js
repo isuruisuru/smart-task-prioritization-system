@@ -28,8 +28,7 @@ export const TasksProvider = ({ children }) => {
     const openModalforEdit = (task) => {
         setModalMode("edit");
         setIsEditing(true);
-        setTask(task);
-        setTask({});
+        setActiveTask({task});
     }
 
     const openProfileModal = () => {
@@ -98,6 +97,8 @@ export const TasksProvider = ({ children }) => {
 
             setTasks(newTasks);
 
+            toast.success("Task updated successfully");
+
         } catch (error) {
             console.log("Error updating task", error);
         }
@@ -150,7 +151,8 @@ export const TasksProvider = ({ children }) => {
             openModalforAdd,
             openModalforEdit,
             activeTask,
-            closeModal
+            closeModal,
+            modalMode,
         }}>
             {children}
         </TasksContext.Provider>

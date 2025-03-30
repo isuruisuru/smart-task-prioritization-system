@@ -2,7 +2,7 @@
 import useRedirect from "@/hooks/useUserRedirect";
 import { useTasks } from "@/context/taskContext";
 import Filters from "./Components/Filters/Filters";
-import TaskItem from "./TaskItem/TaskItem";
+import TaskItem from "./Components/TaskItem/TaskItem";
 import { Task } from "@/utils/types";
 
 export default function Home() {
