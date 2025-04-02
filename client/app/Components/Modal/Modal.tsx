@@ -34,7 +34,7 @@ function Modal() {
     }
 
   return (
-    <div className='fixed left-0 top-0 w-full h-full bg-[#333]/30 overflow-hidden'>
+    <div className='fixed left-0 top-0 w-full h-full bg-[#333]/30 overflow-hidden z-1'>
         <form action="" className="py-5 px-6 max-w-[520px] w-full flex flex-col gap-3 bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg shadow-md"
             onSubmit={handleSubmit}
             ref={ref}>
