@@ -109,8 +109,8 @@ export function RadialChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Task completion improved by {Math.round((completedTasks.length/tasksTotal)*100)}% this month{" "}
+        <div className="items-center gap-2 font-medium leading-none">
+          Task completion improved by <span className="text-[#2669F4] inline-block">{Math.round((completedTasks.length/tasksTotal)*100)}%</span> this month{" "}
         </div>
         <div className="leading-none text-muted-foreground">
           Analysis based on tasks completed in the last 30 days
