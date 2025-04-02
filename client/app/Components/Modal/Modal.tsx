@@ -71,6 +71,15 @@ function Modal() {
                 </select>
             </div>
             <div className='flex flex-col gap-1'>
+                <label htmlFor="dueDate">Start Date</label>
+                <input type="date"
+                    className='bg-[#f9f9f9] p-2 rounded-md border'
+                    name='dueDate'
+                    id='dueDate'
+                    value={task.dueDate}
+                    onChange={(e) => handleInput('dueDate')(e)} />
+            </div>
+            <div className='flex flex-col gap-1'>
                 <label htmlFor="dueDate">Due Date</label>
                 <input type="date"
                     className='bg-[#f9f9f9] p-2 rounded-md border'

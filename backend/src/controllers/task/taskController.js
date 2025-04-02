@@ -3,7 +3,7 @@ import TaskModel from "../../models/tasks/TaskModel.js";
 
 export const createTask = asyncHandler(async(req, res) => {
     try {
-        const { title, description, dueDate, priority, status } = req.body;
+        const { title, description, startDate, dueDate, priority, status } = req.body;
 
         if(!title || title.trim() === ""){
             res.status(400).json({ message: "Title is required" });
@@ -16,6 +16,7 @@ export const createTask = asyncHandler(async(req, res) => {
         const task = new TaskModel({
             title,
             description,
+            startDate,
             dueDate,
             priority,
             status,
@@ -84,7 +85,7 @@ export const updateTask = asyncHandler(async(req, res) => {
 
         const { id } = req.params;
 
-        const { title, description, dueDate, priority, status, completed } = req.body;
+        const { title, description, startDate, dueDate, priority, status, completed } = req.body;
 
         if(!id){
             res.status(400).json({ message: "Task id is required" });
@@ -104,6 +105,7 @@ export const updateTask = asyncHandler(async(req, res) => {
         // update task
         task.title = title || task.title;
         task.description = description || task.description;
+        task.startDate = startDate || task.startDate;
         task.dueDate = dueDate || task.dueDate;
         task.priority = priority || task.priority;
         task.status = status || task.status;

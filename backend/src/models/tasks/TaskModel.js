@@ -13,6 +13,11 @@ const TaskSchema = new mongoose.Schema(
             default: "no description"
         },
 
+        startDate: {
+            type: Date,
+            default: Date.now()
+        },
+
         dueDate: {
             type: Date,
             default: Date.now()
