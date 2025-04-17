@@ -3,14 +3,14 @@ import TaskModel from "../../models/tasks/TaskModel.js";
 
 export const createTask = asyncHandler(async(req, res) => {
     try {
-        const { title, description, startDate, dueDate, priority, status } = req.body;
+        const { title, description, startDate, dueDate, priority, status, useAI } = req.body;
 
         if(!title || title.trim() === ""){
-            res.status(400).json({ message: "Title is required" });
+            return res.status(400).json({ message: "Title is required" });
         }
 
         if(!description || description.trim() === ""){
-            res.status(400).json({ message: "Description is required" });
+            return res.status(400).json({ message: "Description is required" });
         }
 
         const task = new TaskModel({
@@ -20,15 +20,16 @@ export const createTask = asyncHandler(async(req, res) => {
             dueDate,
             priority,
             status,
+            useAI,
             user: req.user._id
         });
 
         await task.save();
 
-        res.status(201).json(task);
+        return res.status(201).json(task);
     } catch (error) {
         console.log("Error in create task: ", error.message);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 });
 
@@ -85,7 +86,7 @@ export const updateTask = asyncHandler(async(req, res) => {
 
         const { id } = req.params;
 
-        const { title, description, startDate, dueDate, priority, status, completed } = req.body;
+        const { title, description, startDate, dueDate, priority, status, completed, useAI } = req.body;
 
         if(!id){
             res.status(400).json({ message: "Task id is required" });
@@ -110,6 +111,7 @@ export const updateTask = asyncHandler(async(req, res) => {
         task.priority = priority || task.priority;
         task.status = status || task.status;
         task.completed = completed || task.completed;
+        task.useAI = useAI || task.useAI;
 
         await task.save();
 

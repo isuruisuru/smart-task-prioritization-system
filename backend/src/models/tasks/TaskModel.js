@@ -5,7 +5,7 @@ const TaskSchema = new mongoose.Schema(
         title: {
             type: String,
             required: [true, "please provide a title"],
-            unique: true
+            unique: false
         },
 
         description: {
@@ -44,10 +44,20 @@ const TaskSchema = new mongoose.Schema(
             type: mongoose.Schema.ObjectId,
             ref: "User",
             required: true
+        },
+
+        labels: {
+            type: [String],
+            default: []
+        },
+        useAI: {
+            type: Boolean,
+            default: true
         }
     },
     { timestamps: true }    
 );
+
 
 const TaskModel = mongoose.model("Task", TaskSchema);
 

@@ -69,38 +69,105 @@ export const TasksProvider = ({ children }) => {
         setLoading(false);
     };
 
-    // create task 
-    const createTask = async (task) => {
-        setLoading(true);
+    /**
+     * Creates a new task with optional AI prioritization
+     * @param {Object} task - The task object
+     * @param {boolean} useAI - Whether to use AI for prioritization
+     */
+    const createTask = async (task, useAI) => {
         try {
-            const response = await axios.post(`${serverUrl}/task/create`, task);
-            console.log(response.data);
-            setTasks([...tasks, response.data]);
-            toast.success("Task created successfully");
-            setIsEditing(false);
+            let taskData = { ...task, useAI };
+            
+            // If AI is enabled, get priority from AI service
+            if (useAI) {
+                const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: task.title,
+                        description: task.description,
+                        due_date: task.dueDate
+                    })
+                });
+
+                if (aiResponse.ok) {
+                    const aiResult = await aiResponse.json();
+                    taskData.priority = aiResult.priority.toLowerCase();
+                    taskData.labels = aiResult.labels;
+                }
+            }
+
+            // Create task with the priority (either from AI or user input)
+            const response = await fetch(`${serverUrl}/task/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                credentials: 'include',
+                body: JSON.stringify(taskData)
+            });
+
+            if (response.ok) {
+                const newTask = await response.json();
+                // Update your tasks state here
+                setTasks(prev => [...prev, newTask]);
+                // Optionally refresh the task list
+                getTasks();
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to create task:', errorData);
+            }
         } catch (error) {
-            console.log("Error creating task", error);
+            console.error('Error creating task:', error);
         }
-        setLoading(false);
     };
 
     // update task
-    const updateTask = async (task) => {
+    const updateTask = async (task, useAI) => {
         setLoading(true);
         try {
-            const response = await axios.patch(`${serverUrl}/task/${task._id}`, task);
+            let taskData = { ...task, useAI };
 
-            // update the task in the tasks array
+            if (useAI) {
+                try {
+                    const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: task.title,
+                            description: task.description,
+                            due_date: task.dueDate
+                        })
+                    });
+
+                    if (aiResponse.ok) {
+                        const aiResult = await aiResponse.json();
+                        taskData.priority = aiResult.priority.toLowerCase();
+                        taskData.labels = aiResult.labels;
+                    }
+                } catch (error) {
+                    console.error('Error getting AI priority:', error);
+                    toast.error('Failed to get AI priority');
+                }
+            }
+
+            const response = await axios.patch(`${serverUrl}/task/${task._id}`, taskData);
+
             const newTasks = tasks.map((tsk) => {
                 return tsk._id === response.data._id ? response.data : tsk;
             });
 
             setTasks(newTasks);
-
             toast.success("Task updated successfully");
 
         } catch (error) {
-            console.log("Error updating task", error);
+            console.error("Error updating task", error);
+            toast.error("Failed to update task");
         }
         setLoading(false);
     };

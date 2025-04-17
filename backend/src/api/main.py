@@ -2,9 +2,18 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from src.services.ai_agent import TaskPrioritizer, Task
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Smart Task Prioritization System")
 task_prioritizer = TaskPrioritizer()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/prioritize-task", response_model=Task)
 async def prioritize_single_task(task: Task):
