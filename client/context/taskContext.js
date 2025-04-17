@@ -28,7 +28,9 @@ export const TasksProvider = ({ children }) => {
     const openModalforEdit = (task) => {
         setModalMode("edit");
         setIsEditing(true);
-        setActiveTask({task});
+        // setActiveTask({task});
+        // Pass the entire task object including the useAI flag
+        setActiveTask(task);
     }
 
     const openProfileModal = () => {
@@ -76,9 +78,8 @@ export const TasksProvider = ({ children }) => {
      */
     const createTask = async (task, useAI) => {
         try {
-            let taskData = { ...task, useAI };
+            let taskData = { ...task };
             
-            // If AI is enabled, get priority from AI service
             if (useAI) {
                 const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
                     method: 'POST',
@@ -99,7 +100,9 @@ export const TasksProvider = ({ children }) => {
                 }
             }
 
-            // Create task with the priority (either from AI or user input)
+            // Add useAI flag to the task data
+            taskData.useAI = useAI;
+
             const response = await fetch(`${serverUrl}/task/create`, {
                 method: 'POST',
                 headers: {
@@ -112,13 +115,7 @@ export const TasksProvider = ({ children }) => {
 
             if (response.ok) {
                 const newTask = await response.json();
-                // Update your tasks state here
                 setTasks(prev => [...prev, newTask]);
-                // Optionally refresh the task list
-                getTasks();
-            } else {
-                const errorData = await response.json();
-                console.error('Failed to create task:', errorData);
             }
         } catch (error) {
             console.error('Error creating task:', error);

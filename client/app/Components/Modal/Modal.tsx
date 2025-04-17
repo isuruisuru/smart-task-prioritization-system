@@ -19,9 +19,11 @@ function Modal() {
     // Update useAI state when task changes
     useEffect(() => {
         if (modalMode === "edit" && activeTask) {
+            // When editing, set the task data
             handleInput("setTask")(activeTask);
-            // Set useAI based on the task's preference
-            setUseAI(activeTask.useAI ?? true);
+            // Set useAI based on whether the task was created with AI
+            // If the task has no priority set manually, it was created with AI
+            setUseAI(activeTask.priority === undefined || activeTask.priority === null);
         } else if (modalMode === "add") {
             // For new tasks, default to true
             setUseAI(true);
