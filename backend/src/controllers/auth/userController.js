@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../../models/auth/UserModel.js";
 import generateToken from "../../helpers/generateToken.js";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Token from "../../models/auth/Token.js";
 import crypto from "node:crypto";
@@ -89,7 +89,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 
   // check id the password match the hashed password in the database
-  const isMatch = await bcrypt.compare(password, userExists.password);
+  const isMatch = await bcryptjs.compare(password, userExists.password);
 
   if (!isMatch) {
     // 400 Bad Request
