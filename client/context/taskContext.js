@@ -28,8 +28,6 @@ export const TasksProvider = ({ children }) => {
     const openModalforEdit = (task) => {
         setModalMode("edit");
         setIsEditing(true);
-        // setActiveTask({task});
-        // Pass the entire task object including the useAI flag
         setActiveTask(task);
     }
 
@@ -78,7 +76,7 @@ export const TasksProvider = ({ children }) => {
      */
     const createTask = async (task, useAI) => {
         try {
-            let taskData = { ...task };
+            let taskData = { ...task, useAI };
             
             if (useAI) {
                 const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
@@ -99,9 +97,6 @@ export const TasksProvider = ({ children }) => {
                     taskData.labels = aiResult.labels;
                 }
             }
-
-            // Add useAI flag to the task data
-            taskData.useAI = useAI;
 
             const response = await fetch(`${serverUrl}/task/create`, {
                 method: 'POST',

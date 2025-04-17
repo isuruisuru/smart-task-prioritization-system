@@ -18,14 +18,16 @@ function Modal() {
 
     // Update useAI state when task changes
     useEffect(() => {
+        console.log('Modal Mode:', modalMode);
+        console.log('Active Task:', activeTask);
+        
         if (modalMode === "edit" && activeTask) {
-            // When editing, set the task data
             handleInput("setTask")(activeTask);
-            // Set useAI based on whether the task was created with AI
-            // If the task has no priority set manually, it was created with AI
-            setUseAI(activeTask.priority === undefined || activeTask.priority === null);
+            // Check if the task was created with AI by checking if it has a priority
+            const wasCreatedWithAI = activeTask.useAI !== false;
+            console.log('Was created with AI:', wasCreatedWithAI);
+            setUseAI(wasCreatedWithAI);
         } else if (modalMode === "add") {
-            // For new tasks, default to true
             setUseAI(true);
         }
     }, [modalMode, activeTask]);
@@ -34,9 +36,9 @@ function Modal() {
         e.preventDefault();
 
         if(modalMode === "edit"){
-            await updateTask(task, useAI);
+            await updateTask({...task, useAI}, useAI);
         }else if(modalMode === "add"){
-            await createTask(task, useAI);
+            await createTask({...task, useAI}, useAI);
         }
 
         closeModal();
@@ -50,7 +52,9 @@ function Modal() {
             <div className="flex flex-col gap-1">
                 <label htmlFor="useAI">Auto-Prioritize Task</label>
                 <div className="flex items-center justify-between bg-[#F9F9F9] p-2 rounded-md border">
-                    <label htmlFor="useAI">Use AI to set priority</label>
+                    <label htmlFor="useAI">
+                        {modalMode === 'edit' ? 'Re-analyze task priority' : 'Use AI to set priority'}
+                    </label>
                     <div className="relative inline-block w-12 h-6">
                         <input
                             type="checkbox"

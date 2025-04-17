@@ -20,7 +20,7 @@ export const createTask = asyncHandler(async(req, res) => {
             dueDate,
             priority,
             status,
-            useAI,
+            useAI: useAI === true,
             user: req.user._id
         });
 
