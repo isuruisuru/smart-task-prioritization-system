@@ -95,7 +95,7 @@ function Modal() {
                     placeholder='Task Title'
                     name='title'
                     id='title'
-                    value={task.title}
+                    value={task.title || ""}
                     onChange={(e) => handleInput('title')(e)} />
             </div>
             <div className='flex flex-col gap-1'>
@@ -105,7 +105,7 @@ function Modal() {
                     name='description'
                     id='description'
                     rows={4}
-                    value={task.description}
+                    value={task.description || ""}
                     onChange={(e) => handleInput('description')(e)} />
             </div>
             {!useAI && (
@@ -114,7 +114,7 @@ function Modal() {
                     <select className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer text-sm'
                         name='priority'
                         id='priority'
-                        value={task.priority}
+                        value={task.priority || "low"}
                         onChange={(e) => handleInput('priority')(e)}>
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
@@ -123,13 +123,13 @@ function Modal() {
                 </div>
             )}
             <div className='flex flex-col gap-1'>
-                <label htmlFor="dueDate" className="text-sm">Start Date</label>
+                <label htmlFor="startDate" className="text-sm">Start Date</label>
                 <input type="date"
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
-                    name='dueDate'
-                    id='dueDate'
-                    value={task.dueDate}
-                    onChange={(e) => handleInput('dueDate')(e)} />
+                    name='startDate'
+                    id='startDate'
+                    value={task.startDate || ""}
+                    onChange={(e) => handleInput('startDate')(e)} />
             </div>
             <div className='flex flex-col gap-1'>
                 <label htmlFor="dueDate" className="text-sm">Due Date</label>
@@ -137,7 +137,7 @@ function Modal() {
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     name='dueDate'
                     id='dueDate'
-                    value={task.dueDate}
+                    value={task.dueDate || ""}
                     onChange={(e) => handleInput('dueDate')(e)} />
             </div>
             <div className="flex flex-col gap-1">
@@ -148,7 +148,7 @@ function Modal() {
                         <select
                             className="bg-[#F9F9F9] p-2 rounded-md border cursor-pointer text-sm"
                             name="completed"
-                            value={task.completed ? "true" : "false"}
+                            value={typeof task.completed === "boolean" ? (task.completed ? "true" : "false") : "false"}
                             onChange={(e) => handleInput("completed")(e)}>
                         <option value="false">No</option>
                         <option value="true">Yes</option>
