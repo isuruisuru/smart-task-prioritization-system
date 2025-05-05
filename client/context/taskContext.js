@@ -79,7 +79,7 @@ export const TasksProvider = ({ children }) => {
             let taskData = { ...task, useAI };
             
             if (useAI) {
-                const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ export const TasksProvider = ({ children }) => {
 
             if (useAI) {
                 try {
-                    const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                    const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
