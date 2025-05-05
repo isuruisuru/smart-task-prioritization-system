@@ -4,6 +4,16 @@ import { useTasks } from "@/context/taskContext";
 import { useEffect } from 'react';
 import useDetectOutside from '@/hooks/useDetectOutside';
 
+function formatDate(date: any) {
+  if (!date) return "";
+  const d = new Date(typeof date === 'string' || typeof date === 'number' ? date : '');
+  if (isNaN(d.getTime())) return "";
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function Modal() {
     const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask } = useTasks();
     const ref = React.useRef<HTMLFormElement | null>(null);
@@ -128,7 +138,7 @@ function Modal() {
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     name='startDate'
                     id='startDate'
-                    value={task.startDate || ""}
+                    value={formatDate(task.startDate)}
                     onChange={(e) => handleInput('startDate')(e)} />
             </div>
             <div className='flex flex-col gap-1'>
@@ -137,7 +147,7 @@ function Modal() {
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     name='dueDate'
                     id='dueDate'
-                    value={task.dueDate || ""}
+                    value={formatDate(task.dueDate)}
                     onChange={(e) => handleInput('dueDate')(e)} />
             </div>
             <div className="flex flex-col gap-1">
