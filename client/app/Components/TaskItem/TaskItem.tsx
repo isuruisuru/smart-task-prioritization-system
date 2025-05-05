@@ -39,7 +39,7 @@ function TaskItem({ task }: TaskItemProps) {
                 <div className='flex items-center gap-3 text-gray-400 text-[1.2rem]'>
                     <button className={`cursor-pointer ${
                         task.completed ? "text-yellow-400" : "text-gray-400"
-                    }`}>
+                    }`} title={task.completed ? "Completed" : "Not Completed"}>
                         {star}
                     </button>
                     <button 
@@ -48,10 +48,12 @@ function TaskItem({ task }: TaskItemProps) {
                          getTask(task._id);
                          openModalforEdit(task);   
                         }}
+                        title="Edit Task"
                         >{edit}</button>
                     <button 
                         className='text-[#f65314] cursor-pointer'
                         onClick={() => deleteTask(task._id)}
+                        title="Delete Task"
                         >{trash}</button>
                 </div>
             </div>
