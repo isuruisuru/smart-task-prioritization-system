@@ -4,10 +4,17 @@ import { useTasks } from "@/context/taskContext";
 import { useEffect } from 'react';
 import useDetectOutside from '@/hooks/useDetectOutside';
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 function Modal() {
     const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask } = useTasks();
     const ref = React.useRef<HTMLFormElement | null>(null);
     const [useAI, setUseAI] = React.useState(true);
+    const [users, setUsers] = React.useState<User[]>([]);
 
     // use the hook to detect clicks outside of the modal
     useDetectOutside({ ref, callback: () => {
@@ -31,6 +38,12 @@ function Modal() {
             setUseAI(true);
         }
     }, [modalMode, activeTask]);
+
+    useEffect(() => {
+        fetch('/api/v1/all') // Adjust the endpoint as needed
+            .then(res => res.json())
+            .then(data => setUsers(data));
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -144,7 +157,22 @@ function Modal() {
                     </div>
                 </div>
             </div>
-
+            <div className='flex flex-col gap-1'>
+                <label htmlFor="assignee">Assign To <span className="text-red-500">*</span></label>
+                <select
+                    className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer'
+                    name='assignee'
+                    id='assignee'
+                    value={task.assignee || ""}
+                    onChange={(e) => handleInput('assignee')(e)}
+                    required
+                >
+                    <option value="">Select a user</option>
+                    {users.map(user => (
+                        <option key={user._id} value={user._id}>{user.name} ({user.email})</option>
+                    ))}
+                </select>
+            </div>
             <div className='mt-8'>
                 <button 
                     type='submit'
