@@ -99,7 +99,7 @@ function Modal() {
                 </div>
             </div>
             <div className='flex flex-col gap-1'>
-                <label htmlFor="title" className="text-sm">Title</label>
+                <label htmlFor="title" className="text-sm">Title <span className="text-red-500">*</span></label>
                 <input type="text"
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     placeholder='Task Title'
@@ -109,7 +109,7 @@ function Modal() {
                     onChange={(e) => handleInput('title')(e)} />
             </div>
             <div className='flex flex-col gap-1'>
-                <label htmlFor="description" className="text-sm">Description</label>
+                <label htmlFor="description" className="text-sm">Description <span className="text-red-500">*</span></label>
                 <textarea className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     placeholder='Task Description'
                     name='description'
@@ -120,7 +120,7 @@ function Modal() {
             </div>
             {!useAI && (
                 <div className='flex flex-col gap-1'>
-                    <label htmlFor="priority" className="text-sm">Select Priority</label>
+                    <label htmlFor="priority" className="text-sm">Select Priority <span className="text-red-500">*</span></label>
                     <select className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer text-sm'
                         name='priority'
                         id='priority'
@@ -133,7 +133,7 @@ function Modal() {
                 </div>
             )}
             <div className='flex flex-col gap-1'>
-                <label htmlFor="startDate" className="text-sm">Start Date</label>
+                <label htmlFor="startDate" className="text-sm">Start Date <span className="text-red-500">*</span></label>
                 <input type="date"
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     name='startDate'
@@ -142,7 +142,7 @@ function Modal() {
                     onChange={(e) => handleInput('startDate')(e)} />
             </div>
             <div className='flex flex-col gap-1'>
-                <label htmlFor="dueDate" className="text-sm">Due Date</label>
+                <label htmlFor="dueDate" className="text-sm">Due Date <span className="text-red-500">*</span></label>
                 <input type="date"
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
                     name='dueDate'
