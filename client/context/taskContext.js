@@ -79,7 +79,7 @@ export const TasksProvider = ({ children }) => {
             let taskData = { ...task, useAI };
             
             if (useAI) {
-                const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ export const TasksProvider = ({ children }) => {
 
             if (useAI) {
                 try {
-                    const aiResponse = await fetch('http://localhost:8000/prioritize-task', {
+                    const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -195,6 +195,21 @@ export const TasksProvider = ({ children }) => {
     // get pending tasks
     const activeTasks = tasks.filter((task) => !task.completed);
 
+    // --- New statistics logic ---
+    const now = new Date();
+    const allTasks = tasks;
+    const inProgressTasks = tasks.filter(
+      (task) =>
+        !task.completed &&
+        task.dueDate &&
+        new Date(task.dueDate) > now
+    );
+    const dueTasks = tasks.filter(
+      (task) =>
+        !task.completed &&
+        task.dueDate &&
+        new Date(task.dueDate) <= now
+    );
 
     useEffect(() => {
         getTasks();
@@ -221,8 +236,11 @@ export const TasksProvider = ({ children }) => {
             closeModal,
             modalMode,
             openProfileModal,
-            completedTasks,
-            activeTasks
+            // --- new stats ---
+            allTasks,
+            inProgressTasks,
+            dueTasks,
+            completedTasks
         }}>
             {children}
         </TasksContext.Provider>

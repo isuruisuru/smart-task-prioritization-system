@@ -7,7 +7,7 @@ import { useTasks } from "@/context/taskContext";
 
 function Header() {
   const { user } = useUserContext();
-  const { activeTasks, openModalforAdd } = useTasks();
+  const { inProgressTasks, openModalforAdd } = useTasks();
 
   const { name } = user;
 
@@ -25,7 +25,7 @@ function Header() {
         <p className="text-sm text-[#666]">
           {userId ? (
             <>You have{" "}
-            <span className="font-bold text-[#3aafae]">{activeTasks.length}</span> active tasks
+            <span className="font-bold text-[#3aafae]">{inProgressTasks.length}</span> active tasks
             </>
           ): (
             "Please login to view your tasks"

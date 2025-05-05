@@ -6,7 +6,7 @@ import { useTasks } from "@/context/taskContext";
 
 function Profile() {
     const { user } = useUserContext();
-    const { tasks, completedTasks, activeTasks } = useTasks();
+    const { allTasks, inProgressTasks, dueTasks, completedTasks } = useTasks();
 
   return (
     <div className="ml-3 mr-3">
@@ -32,24 +32,24 @@ function Profile() {
         <div className="mt-2 flex flex-col gap-8">
             <div className="grid grid-cols-2 gap-2">
                 <div className="text-gray-400">
-                    <p className="text-sm">Total Tasks:</p>
+                    <p className="text-sm">All Tasks:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-purple-500 rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">{tasks.length}</span>
+                    <span className="font-medium text-3xl text-[#333]">{allTasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
                     <p className="text-sm">In Progress:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-[#3AAFAE] rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">{activeTasks.length}</span>
+                    <span className="font-medium text-3xl text-[#333]">{inProgressTasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
-                    <p className="text-sm">Open Tasks:</p>
+                    <p className="text-sm">Due Tasks:</p>
                     <p className="pl-4 relative flex gap-2">
                     <span className="absolute h-[60%] w-[0.2rem] left-[1px] top-1/2 translate-y-[-50%] bg-orange-400 rounded-[5px]"></span>
-                    <span className="font-medium text-3xl text-[#333]">{activeTasks.length}</span>
+                    <span className="font-medium text-3xl text-[#333]">{dueTasks.length}</span>
                     </p>
                 </div>
                 <div className="text-gray-400">
