@@ -33,12 +33,12 @@ const chartConfig: ChartConfig = {
 } satisfies ChartConfig;
 
 export function RadialChart() {
-  const { tasks, completedTasks, activeTasks } = useTasks();
-  const tasksTotal = tasks.length;
+  const { completedTasks, inProgressTasks, dueTasks } = useTasks();
+  const tasksTotal = completedTasks.length + inProgressTasks.length + dueTasks.length;
 
   const chartData = [
     {
-        pending: activeTasks.length,
+        pending: inProgressTasks.length + dueTasks.length,
         completed: completedTasks.length
     }
   ];

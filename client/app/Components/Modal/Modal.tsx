@@ -15,7 +15,7 @@ function formatDate(date: any) {
 }
 
 function Modal() {
-    const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask } = useTasks();
+    const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask, allTasks, inProgressTasks, dueTasks, completedTasks } = useTasks();
     const ref = React.useRef<HTMLFormElement | null>(null);
     const [useAI, setUseAI] = React.useState(true);
 
