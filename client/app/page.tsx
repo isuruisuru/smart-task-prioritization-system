@@ -19,7 +19,7 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="m-6 h-full">
+    <main className="m-6">
       <div className="flex justify-between">
         <h1 className="text-xl font-bold">All Tasks</h1>
         <Filters />
