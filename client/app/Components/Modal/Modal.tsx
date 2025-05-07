@@ -3,6 +3,7 @@ import React, { use } from 'react'
 import { useTasks } from "@/context/taskContext";
 import { useEffect } from 'react';
 import useDetectOutside from '@/hooks/useDetectOutside';
+import { useUsers } from '@/hooks/useUsers';
 
 function formatDate(date: any) {
   if (!date) return "";
@@ -16,6 +17,7 @@ function formatDate(date: any) {
 
 function Modal() {
     const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask, allTasks, inProgressTasks, dueTasks, completedTasks } = useTasks();
+    const { users, loading, error } = useUsers();
     const ref = React.useRef<HTMLFormElement | null>(null);
     const [useAI, setUseAI] = React.useState(true);
 
@@ -97,6 +99,22 @@ function Modal() {
                         </label>
                     </div>
                 </div>
+            </div>
+            <div className='flex flex-col gap-1'>
+                <label htmlFor="assignee" className="text-sm">Assignee</label>
+                <select 
+                    className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer text-sm'
+                    name='assignee'
+                    id='assignee'
+                    value={task.assignee || ""}
+                    onChange={(e) => handleInput('assignee')(e)}>
+                    <option value="">Select Assignee</option>
+                    {users.map((user) => (
+                        <option key={user._id} value={user._id}>
+                            {user.name} ({user.email})
+                        </option>
+                    ))}
+                </select>
             </div>
             <div className='flex flex-col gap-1'>
                 <label htmlFor="title" className="text-sm">Title <span className="text-red-500">*</span></label>
