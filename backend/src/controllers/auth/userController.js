@@ -72,58 +72,63 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 // user login
 export const loginUser = asyncHandler(async (req, res) => {
-  // get email and password from req.body
-  const { email, password } = req.body;
+  try {
+    // get email and password from req.body
+    const { email, password } = req.body;
 
-  // validation
-  if (!email || !password) {
-    // 400 Bad Request
-    return res.status(400).json({ message: "All fields are required" });
-  }
+    // validation
+    if (!email || !password) {
+      // 400 Bad Request
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-  // check if user exists
-  const userExists = await User.findOne({ email });
+    // check if user exists
+    const userExists = await User.findOne({ email });
 
-  if (!userExists) {
-    return res.status(404).json({ message: "User not found, sign up!" });
-  }
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found, sign up!" });
+    }
 
-  // check id the password match the hashed password in the database
-  const isMatch = await bcryptjs.compare(password, userExists.password);
+    // check if the password match the hashed password in the database
+    const isMatch = await bcryptjs.compare(password, userExists.password);
 
-  if (!isMatch) {
-    // 400 Bad Request
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
+    if (!isMatch) {
+      // 400 Bad Request
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-  // generate token with user id
-  const token = generateToken(userExists._id);
+    // generate token with user id
+    const token = generateToken(userExists._id);
 
-  if (userExists && isMatch) {
-    const { _id, name, email, role, photo, bio, isVerified } = userExists;
+    if (userExists && isMatch) {
+      const { _id, name, email, role, photo, bio, isVerified } = userExists;
 
-    // set the token in the cookie
-    res.cookie("token", token, {
-      path: "/",
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      sameSite: "none", // cross-site access --> allow all third-party cookies
-      secure: true,
-    });
+      // set the token in the cookie
+      res.cookie("token", token, {
+        path: "/",
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        sameSite: "none", // cross-site access --> allow all third-party cookies
+        secure: true,
+      });
 
-    // send back the user and token in the response to the client
-    res.status(200).json({
-      _id,
-      name,
-      email,
-      role,
-      photo,
-      bio,
-      isVerified,
-      token,
-    });
-  } else {
-    res.status(400).json({ message: "Invalid email or password" });
+      // send back the user and token in the response to the client
+      return res.status(200).json({
+        _id,
+        name,
+        email,
+        role,
+        photo,
+        bio,
+        isVerified,
+        token,
+      });
+    } else {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.log("Error in loginUser: ", error.message);
+    return res.status(500).json({ message: "An error occurred during login. Please try again." });
   }
 });
 

@@ -69,6 +69,11 @@ export const UserContextProvider = ({ children }) => {
         }
       );
 
+      // Store the token in localStorage
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+
       toast.success("User logged in successfully");
 
       // clear the form
@@ -84,7 +89,11 @@ export const UserContextProvider = ({ children }) => {
       router.push("/");
     } catch (error) {
       console.log("Error logging in user", error);
-      toast.error(error.response.data.message);
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An error occurred during login. Please try again.");
+      }
     }
   };
 

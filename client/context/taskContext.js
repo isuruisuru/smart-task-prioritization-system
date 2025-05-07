@@ -6,9 +6,20 @@ import toast from "react-hot-toast";
 const TasksContext = createContext();
 
 const serverUrl = "http://localhost:8001/api/v1";
+const aiServiceUrl = "http://localhost:8000"; // FastAPI server URL
+
+// Configure axios defaults
+axios.defaults.withCredentials = true;
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 export const TasksProvider = ({ children }) => {
-    const userId = useUserContext().user._id;
+    const { user } = useUserContext();
 
     const [tasks, setTasks] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -92,43 +103,38 @@ export const TasksProvider = ({ children }) => {
             };
             
             if (useAI) {
-                const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                try {
+                    const aiResponse = await axios.post(`${aiServiceUrl}/prioritize-task`, {
                         title: task.title,
                         description: task.description,
                         due_date: task.dueDate
-                    })
-                });
+                    });
 
-                if (aiResponse.ok) {
-                    const aiResult = await aiResponse.json();
-                    taskData.priority = aiResult.priority.toLowerCase();
-                    taskData.labels = aiResult.labels;
+                    if (aiResponse.data) {
+                        taskData.priority = aiResponse.data.priority.toLowerCase();
+                        taskData.labels = aiResponse.data.labels || [];
+                    }
+                } catch (error) {
+                    console.error('Error getting AI priority:', error);
+                    // Continue with default priority if AI fails
+                    taskData.priority = task.priority || 'medium';
+                    taskData.labels = [];
                 }
             }
 
-            const response = await fetch(`${serverUrl}/task/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                credentials: 'include',
-                body: JSON.stringify(taskData)
-            });
+            const response = await axios.post(`${serverUrl}/task/create`, taskData);
 
-            if (response.ok) {
-                const newTask = await response.json();
-                setTasks(prev => [...prev, newTask]);
+            if (response.data) {
+                setTasks(prev => [...prev, response.data]);
                 toast.success("Task created successfully");
             }
         } catch (error) {
             console.error('Error creating task:', error);
-            toast.error("Failed to create task");
+            if (error.response?.status === 401) {
+                toast.error("Please login to create tasks");
+            } else {
+                toast.error(error.response?.data?.message || "Failed to create task");
+            }
         }
     };
 
@@ -140,22 +146,15 @@ export const TasksProvider = ({ children }) => {
 
             if (useAI) {
                 try {
-                    const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            title: task.title,
-                            description: task.description,
-                            due_date: task.dueDate
-                        })
+                    const aiResponse = await axios.post(`${aiServiceUrl}/prioritize-task`, {
+                        title: task.title,
+                        description: task.description,
+                        due_date: task.dueDate
                     });
 
-                    if (aiResponse.ok) {
-                        const aiResult = await aiResponse.json();
-                        taskData.priority = aiResult.priority.toLowerCase();
-                        taskData.labels = aiResult.labels;
+                    if (aiResponse.data) {
+                        taskData.priority = aiResponse.data.priority.toLowerCase();
+                        taskData.labels = aiResponse.data.labels;
                     }
                 } catch (error) {
                     console.error('Error getting AI priority:', error);
@@ -228,7 +227,7 @@ export const TasksProvider = ({ children }) => {
 
     useEffect(() => {
         getTasks();
-    }, [userId]);
+    }, [user._id]);
 
     return(
         <TasksContext.Provider value={{

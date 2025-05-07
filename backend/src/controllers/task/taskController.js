@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import TaskModel from "../../models/tasks/TaskModel.js";
-import UserModel from "../../models/user/UserModel.js";
-import { sendEmail } from "../../utils/sendEmail.js";
+import UserModel from "../../models/auth/UserModel.js";
+import sendEmail from "../../helpers/sendEmail.js";
 
 export const createTask = asyncHandler(async(req, res) => {
     try {
@@ -34,19 +34,15 @@ export const createTask = asyncHandler(async(req, res) => {
             const assignedUser = await UserModel.findById(assignee);
             if (assignedUser) {
                 const subject = "New Task Assigned to You";
-                const message = `
-                    <h2>Hello ${assignedUser.name},</h2>
-                    <p>You have been assigned a new task:</p>
-                    <h3>${title}</h3>
-                    <p><strong>Description:</strong> ${description}</p>
-                    <p><strong>Priority:</strong> ${priority}</p>
-                    <p><strong>Due Date:</strong> ${new Date(dueDate).toLocaleDateString()}</p>
-                    <p>Please log in to your account to view more details and update the task status.</p>
-                    <p>Best regards,<br>Task Management System</p>
-                `;
+                const send_to = assignedUser.email;
+                const send_from = process.env.USER_EMAIL;
+                const reply_to = "noreply@noreply.com";
+                const template = "taskAssignment";
+                const name = assignedUser.name;
+                const url = `${process.env.CLIENT_URL}/tasks`;
 
                 try {
-                    await sendEmail(assignedUser.email, subject, message);
+                    await sendEmail(subject, send_to, send_from, reply_to, template, name, url);
                 } catch (emailError) {
                     console.log("Error sending email:", emailError.message);
                     // Don't return error response as task was created successfully
@@ -154,19 +150,15 @@ export const updateTask = asyncHandler(async(req, res) => {
             const assignedUser = await UserModel.findById(assignee);
             if (assignedUser) {
                 const subject = "Task Assigned to You";
-                const message = `
-                    <h2>Hello ${assignedUser.name},</h2>
-                    <p>A task has been assigned to you:</p>
-                    <h3>${task.title}</h3>
-                    <p><strong>Description:</strong> ${task.description}</p>
-                    <p><strong>Priority:</strong> ${task.priority}</p>
-                    <p><strong>Due Date:</strong> ${new Date(task.dueDate).toLocaleDateString()}</p>
-                    <p>Please log in to your account to view more details and update the task status.</p>
-                    <p>Best regards,<br>Task Management System</p>
-                `;
+                const send_to = assignedUser.email;
+                const send_from = process.env.USER_EMAIL;
+                const reply_to = "noreply@noreply.com";
+                const template = "taskAssignment";
+                const name = assignedUser.name;
+                const url = `${process.env.CLIENT_URL}/tasks`;
 
                 try {
-                    await sendEmail(assignedUser.email, subject, message);
+                    await sendEmail(subject, send_to, send_from, reply_to, template, name, url);
                 } catch (emailError) {
                     console.log("Error sending email:", emailError.message);
                     // Don't return error response as task was updated successfully

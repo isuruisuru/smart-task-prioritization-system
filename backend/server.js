@@ -5,8 +5,9 @@ import express from "express";
 import cors from "cors";
 import connect from "./src/db/connect.js";
 import cookieParser from "cookie-parser";
-import fs from "node:fs";
 import errorHandler from "./src/helpers/errorhandler.js";
+import userRoutes from "./src/routes/userRoutes.js";
+import taskRoutes from "./src/routes/taskRoutes.js";
 
 dotenv.config();
 
@@ -25,22 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// routes
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", taskRoutes);
+
 // error handler middleware
 app.use(errorHandler);
-
-//routes
-const routeFiles = fs.readdirSync("./src/routes");
-
-routeFiles.forEach((file) => {
-  // use dynamic import
-  import(`./src/routes/${file}`)
-    .then((route) => {
-      app.use("/api/v1", route.default);
-    })
-    .catch((err) => {
-      console.log("Failed to load route file", err);
-    });
-});
 
 const server = async () => {
   try {
@@ -50,7 +41,7 @@ const server = async () => {
       console.log(`Server is running on port ${port}`);
     });
   } catch (error) {
-    console.log("Failed to strt server.....", error.message);
+    console.log("Failed to start server.....", error.message);
     process.exit(1);
   }
 };
