@@ -46,6 +46,12 @@ const TaskSchema = new mongoose.Schema(
             required: true
         },
 
+        assignee: {
+            type: mongoose.Schema.ObjectId,
+            ref: "User",
+            default: null
+        },
+
         labels: {
             type: [String],
             default: []
