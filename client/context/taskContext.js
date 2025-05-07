@@ -12,7 +12,16 @@ export const TasksProvider = ({ children }) => {
 
     const [tasks, setTasks] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
-    const [task, setTask] = React.useState({});
+    const [task, setTask] = React.useState({
+        title: "",
+        description: "",
+        priority: "low",
+        startDate: "",
+        dueDate: "",
+        completed: false,
+        assignee: "",
+        useAI: true
+    });
 
     const [priority, setPriority] = React.useState("all");
     const [isEditing, setIsEditing] = React.useState(false);
@@ -76,7 +85,11 @@ export const TasksProvider = ({ children }) => {
      */
     const createTask = async (task, useAI) => {
         try {
-            let taskData = { ...task, useAI };
+            let taskData = { 
+                ...task, 
+                useAI,
+                assignee: task.assignee || null
+            };
             
             if (useAI) {
                 const aiResponse = await fetch(`${serverUrl}/prioritize-task`, {
@@ -111,9 +124,11 @@ export const TasksProvider = ({ children }) => {
             if (response.ok) {
                 const newTask = await response.json();
                 setTasks(prev => [...prev, newTask]);
+                toast.success("Task created successfully");
             }
         } catch (error) {
             console.error('Error creating task:', error);
+            toast.error("Failed to create task");
         }
     };
 
