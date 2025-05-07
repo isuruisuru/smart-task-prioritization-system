@@ -46,9 +46,30 @@ export const TasksProvider = ({ children }) => {
         setTask({});
     }
     const openModalforEdit = (task) => {
+        console.log("Opening modal for edit with task:", task); // Debug log
         setModalMode("edit");
         setIsEditing(true);
         setActiveTask(task);
+        
+        // Format the task data properly
+        const formattedTask = {
+            ...task,
+            // Handle assignee - it could be an object with _id or just the _id
+            assignee: task.assignee?._id || task.assignee || "",
+            // Format dates
+            startDate: task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : "",
+            dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "",
+            // Handle boolean values
+            completed: task.completed || false,
+            useAI: task.useAI !== false,
+            // Ensure other fields are present
+            title: task.title || "",
+            description: task.description || "",
+            priority: task.priority || "low"
+        };
+        
+        console.log("Formatted task data:", formattedTask); // Debug log
+        setTask(formattedTask);
     }
 
     const openProfileModal = () => {
@@ -68,7 +89,7 @@ export const TasksProvider = ({ children }) => {
         setLoading(true);
         try {
             const response = await axios.get(`${serverUrl}/tasks`);
-
+            console.log("Fetched tasks:", response.data.tasks); // Debug log
             setTasks(response.data.tasks);
         } catch (error) {
             console.log("Error getting tasks", error);
@@ -197,9 +218,25 @@ export const TasksProvider = ({ children }) => {
 
     const handleInput = (name) => (e) => {
         if(name === 'setTask'){
-            setTask(e)
+            // When setting the entire task, ensure assignee is properly handled
+            const taskData = {
+                ...e,
+                assignee: e.assignee?._id || e.assignee || ""
+            };
+            setTask(taskData);
         } else {
-            setTask({ ...task, [name]: e.target.value });
+            // Special handling for assignee to ensure it's not reset
+            if (name === 'assignee') {
+                setTask(prev => ({
+                    ...prev,
+                    assignee: e.target.value
+                }));
+            } else {
+                setTask(prev => ({
+                    ...prev,
+                    [name]: e.target.value
+                }));
+            }
         }
     }
 

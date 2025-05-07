@@ -34,8 +34,8 @@ function Modal() {
         console.log('Active Task:', activeTask);
         
         if (modalMode === "edit" && activeTask) {
-            handleInput("setTask")(activeTask);
-            // Check if the task was created with AI by checking if it has a priority
+            // Don't use handleInput("setTask") as it overwrites our formatted data
+            // Instead, let the taskContext handle the formatting
             const wasCreatedWithAI = activeTask.useAI !== false;
             console.log('Was created with AI:', wasCreatedWithAI);
             setUseAI(wasCreatedWithAI);
@@ -106,10 +106,13 @@ function Modal() {
                     className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer text-sm'
                     name='assignee'
                     id='assignee'
-                    value={task.assignee || ""}
-                    onChange={(e) => handleInput('assignee')(e)}>
+                    value={task.assignee?._id || task.assignee || ""}
+                    onChange={(e) => {
+                        console.log('Assignee changed:', e.target.value); // Debug log
+                        handleInput('assignee')(e);
+                    }}>
                     <option value="">Select Assignee</option>
-                    {users.map((user) => (
+                    {users && users.map((user) => (
                         <option key={user._id} value={user._id}>
                             {user.name} ({user.email})
                         </option>
@@ -178,8 +181,8 @@ function Modal() {
                             name="completed"
                             value={typeof task.completed === "boolean" ? (task.completed ? "true" : "false") : "false"}
                             onChange={(e) => handleInput("completed")(e)}>
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
                         </select>
                     </div>
                 </div>
