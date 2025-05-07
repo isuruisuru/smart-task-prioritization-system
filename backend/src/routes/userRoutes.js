@@ -24,34 +24,23 @@ import {
 
 const router = express.Router();
 
+// Public routes (no authentication needed)
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.get("/logout", logoutUser);
-router.get("/user", protect, getUser);
-router.patch("/user", protect, updateUser);
-
-// admin route
-router.delete("/admin/users/:id", protect, adminMiddleware, deleteUser);
-
-// get all users
-router.get("/admin/users", protect, creatorMiddleware, getAllUsers);
-
-// login status
 router.get("/login-status", userLoginStatus);
-
-// email verification
-router.post("/verify-email", protect, verifyEmail);
-
-// veriify user --> email verification
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:resetPasswordToken", resetPassword);
 router.post("/verify-user/:verificationToken", verifyUser);
 
-// forgot password
-router.post("/forgot-password", forgotPassword);
-
-//reset password
-router.post("/reset-password/:resetPasswordToken", resetPassword);
-
-// change password ---> user must be logged in
+// Protected routes (authentication needed)
+router.get("/logout", protect, logoutUser);
+router.get("/user", protect, getUser);
+router.patch("/user", protect, updateUser);
+router.post("/verify-email", protect, verifyEmail);
 router.patch("/change-password", protect, changePassword);
+
+// Admin routes (authentication needed, no role restriction)
+router.delete("/admin/users/:id", protect, adminMiddleware, deleteUser);
+router.get("/admin/users", protect, getAllUsers);
 
 export default router;

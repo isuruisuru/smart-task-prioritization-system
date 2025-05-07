@@ -149,6 +149,7 @@ export const getUser = asyncHandler(async (req, res) => {
   } else {
     // 404 Not Found
     res.status(404).json({ message: "User not found" });
+    
   }
 });
 
