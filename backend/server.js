@@ -9,6 +9,7 @@ import errorHandler from "./src/helpers/errorhandler.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import taskRoutes from "./src/routes/taskRoutes.js";
 
+// Load environment variables
 dotenv.config();
 
 const port = process.env.PORT || 8000;

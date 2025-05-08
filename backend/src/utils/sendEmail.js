@@ -1,45 +1,79 @@
 import nodemailer from "nodemailer";
-import path from "path";
-import ejs from "ejs";
+import { config } from "dotenv";
+import { join } from "path";
 import { fileURLToPath } from "url";
+import { dirname } from "path";
+import fs from "fs";
+import handlebars from "handlebars";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
-const sendEmail = async (options) => {
-  // Create a transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: true, // true for 465, false for other ports
+// Load environment variables from the root .env file
+config();
+
+// Debug: Log environment variables and paths
+console.log('Current working directory:', process.cwd());
+console.log('Environment file path:', join(process.cwd(), '.env'));
+console.log('Email Configuration:');
+console.log('EMAIL_USER:', process.env.EMAIL_USER);
+console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? 'Password is set' : 'Password is not set');
+console.log('EMAIL_FROM:', process.env.EMAIL_FROM);
+
+// Create transporter with Gmail service
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
-  // Get the path to the email template
-  const templatePath = path.join(__dirname, "../views/taskAssignment.handlebars");
+// Verify transporter configuration
+transporter.verify(function (error, success) {
+    if (error) {
+        console.log("SMTP connection error:", error);
+    } else {
+        console.log("SMTP server is ready to take our messages");
+    }
+});
 
-  // Render the email template with EJS
-  const html = await ejs.renderFile(templatePath, options);
+const sendEmail = async ({ email, subject, assigneeName, task }) => {
+    try {
+        // Read email template
+        const templatePath = join(__dirname, '../../templates/emailTemplate.html');
+        const source = fs.readFileSync(templatePath, 'utf-8');
+        const template = handlebars.compile(source);
 
-  // Define email options
-  const mailOptions = {
-    from: process.env.EMAIL_FROM,
-    to: options.email,
-    subject: options.subject,
-    html,
-  };
+        // Prepare template data
+        const templateData = {
+            assigneeName,
+            taskTitle: task.title,
+            taskDescription: task.description,
+            taskPriority: task.priority,
+            taskStartDate: new Date(task.startDate).toLocaleDateString(),
+            taskDueDate: new Date(task.dueDate).toLocaleDateString()
+        };
 
-  // Send the email
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully");
-  } catch (error) {
-    console.error("Error sending email:", error);
-    throw error;
-  }
+        // Generate HTML
+        const html = template(templateData);
+
+        // Email options
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject,
+            html
+        };
+
+        // Send email
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
 };
 
-export default sendEmail; 
+export default sendEmail;
