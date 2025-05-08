@@ -8,6 +8,20 @@ const UserContext = React.createContext();
 // set axios to include credentials with every request
 axios.defaults.withCredentials = true;
 
+// Add axios interceptor to include token in headers
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export const UserContextProvider = ({ children }) => {
   const serverUrl = "http://localhost:8001";
 
@@ -125,6 +139,9 @@ export const UserContextProvider = ({ children }) => {
       const res = await axios.get(`${serverUrl}/api/v1/logout`, {
         withCredentials: true, // send cookies to the server
       });
+
+      // Remove token from localStorage
+      localStorage.removeItem('token');
 
       toast.success("User logged out successfully");
 
@@ -250,7 +267,7 @@ export const UserContextProvider = ({ children }) => {
         }
       );
 
-      toast.success("Forgot password email sent successfully");
+      toast.success("Password reset email sent successfully");
       setLoading(false);
     } catch (error) {
       console.log("Error sending forgot password email", error);
@@ -276,8 +293,6 @@ export const UserContextProvider = ({ children }) => {
 
       toast.success("Password reset successfully");
       setLoading(false);
-      // redirect to login page
-      router.push("/login");
     } catch (error) {
       console.log("Error resetting password", error);
       toast.error(error.response.data.message);
@@ -290,9 +305,12 @@ export const UserContextProvider = ({ children }) => {
     setLoading(true);
 
     try {
-      const res = await axios.patch(
+      const res = await axios.post(
         `${serverUrl}/api/v1/change-password`,
-        { currentPassword, newPassword },
+        {
+          currentPassword,
+          newPassword,
+        },
         {
           withCredentials: true, // send cookies to the server
         }
@@ -307,17 +325,14 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
-  // admin routes
+  // get all users
   const getAllUsers = async () => {
     setLoading(true);
+
     try {
-      const res = await axios.get(
-        `${serverUrl}/api/v1/admin/users`,
-        {},
-        {
-          withCredentials: true, // send cookies to the server
-        }
-      );
+      const res = await axios.get(`${serverUrl}/api/v1/admin/users`, {
+        withCredentials: true, // send cookies to the server
+      });
 
       setAllUsers(res.data);
       setLoading(false);
@@ -328,32 +343,27 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
-  // dynamic form handler
+  // handle user input
   const handlerUserInput = (name) => (e) => {
-    const value = e.target.value;
-
-    setUserState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setUserState((prevState) => {
+      return {
+        ...prevState,
+        [name]: e.target.value,
+      };
+    });
   };
 
   // delete user
   const deleteUser = async (id) => {
     setLoading(true);
+
     try {
-      const res = await axios.delete(
-        `${serverUrl}/api/v1/admin/users/${id}`,
-        {},
-        {
-          withCredentials: true, // send cookies to the server
-        }
-      );
+      const res = await axios.delete(`${serverUrl}/api/v1/admin/users/${id}`, {
+        withCredentials: true, // send cookies to the server
+      });
 
       toast.success("User deleted successfully");
       setLoading(false);
-      // refresh the users list
-      getAllUsers();
     } catch (error) {
       console.log("Error deleting user", error);
       toast.error(error.response.data.message);
@@ -361,11 +371,12 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
+  // useEffect
   useEffect(() => {
     const loginStatusGetUser = async () => {
-      const isLoggedIn = await userLoginStatus();
+      const loggedIn = await userLoginStatus();
 
-      if (isLoggedIn) {
+      if (loggedIn) {
         await getUser();
       }
     };
@@ -373,29 +384,26 @@ export const UserContextProvider = ({ children }) => {
     loginStatusGetUser();
   }, []);
 
-  useEffect(() => {
-    if (user.role === "admin") {
-      getAllUsers();
-    }
-  }, [user.role]);
-
   return (
     <UserContext.Provider
       value={{
-        registerUser,
-        userState,
-        handlerUserInput,
-        loginUser,
-        logoutUser,
-        userLoginStatus,
         user,
+        allUsers,
+        userState,
+        loading,
+        registerUser,
+        loginUser,
+        userLoginStatus,
+        logoutUser,
+        getUser,
         updateUser,
         emailVerification,
         verifyUser,
         forgotPasswordEmail,
         resetPassword,
         changePassword,
-        allUsers,
+        getAllUsers,
+        handlerUserInput,
         deleteUser,
       }}
     >
