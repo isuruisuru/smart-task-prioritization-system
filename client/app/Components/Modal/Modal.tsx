@@ -3,6 +3,7 @@ import React, { use } from 'react'
 import { useTasks } from "@/context/taskContext";
 import { useEffect } from 'react';
 import useDetectOutside from '@/hooks/useDetectOutside';
+import { useUsers } from '@/hooks/useUsers';
 
 function formatDate(date: any) {
   if (!date) return "";
@@ -16,6 +17,7 @@ function formatDate(date: any) {
 
 function Modal() {
     const { task, handleInput, createTask, isEditing, closeModal, modalMode, activeTask, updateTask, allTasks, inProgressTasks, dueTasks, completedTasks } = useTasks();
+    const { users, loading, error } = useUsers();
     const ref = React.useRef<HTMLFormElement | null>(null);
     const [useAI, setUseAI] = React.useState(true);
 
@@ -32,8 +34,8 @@ function Modal() {
         console.log('Active Task:', activeTask);
         
         if (modalMode === "edit" && activeTask) {
-            handleInput("setTask")(activeTask);
-            // Check if the task was created with AI by checking if it has a priority
+            // Don't use handleInput("setTask") as it overwrites our formatted data
+            // Instead, let the taskContext handle the formatting
             const wasCreatedWithAI = activeTask.useAI !== false;
             console.log('Was created with AI:', wasCreatedWithAI);
             setUseAI(wasCreatedWithAI);
@@ -99,6 +101,25 @@ function Modal() {
                 </div>
             </div>
             <div className='flex flex-col gap-1'>
+                <label htmlFor="assignee" className="text-sm">Assignee</label>
+                <select 
+                    className='bg-[#f9f9f9] p-2 rounded-md border cursor-pointer text-sm'
+                    name='assignee'
+                    id='assignee'
+                    value={task.assignee?._id || task.assignee || ""}
+                    onChange={(e) => {
+                        console.log('Assignee changed:', e.target.value); // Debug log
+                        handleInput('assignee')(e);
+                    }}>
+                    <option value="">Select Assignee</option>
+                    {users && users.map((user) => (
+                        <option key={user._id} value={user._id}>
+                            {user.name} ({user.email})
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className='flex flex-col gap-1'>
                 <label htmlFor="title" className="text-sm">Title <span className="text-red-500">*</span></label>
                 <input type="text"
                     className='bg-[#f9f9f9] p-2 rounded-md border text-sm'
@@ -160,8 +181,8 @@ function Modal() {
                             name="completed"
                             value={typeof task.completed === "boolean" ? (task.completed ? "true" : "false") : "false"}
                             onChange={(e) => handleInput("completed")(e)}>
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
                         </select>
                     </div>
                 </div>
