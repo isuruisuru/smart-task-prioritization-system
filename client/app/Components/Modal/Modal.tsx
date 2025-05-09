@@ -46,13 +46,18 @@ function Modal() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+    
         if(modalMode === "edit"){
-            await updateTask({...task, useAI}, useAI);
+            const updatedTask = {
+                ...task,
+                useAI,
+                completed: Boolean(task.completed) // ensure it's a boolean
+            };
+            await updateTask(updatedTask, useAI);
         }else if(modalMode === "add"){
             await createTask({...task, useAI}, useAI);
         }
-
+    
         closeModal();
     }
 
@@ -176,14 +181,22 @@ function Modal() {
                 <div className="flex items-center justify-between bg-[#F9F9F9] p-2 rounded-md border">
                     <label htmlFor="completed" className="text-sm">Completed</label>
                     <div>
-                        <select
-                            className="bg-[#F9F9F9] p-2 rounded-md border cursor-pointer text-sm"
-                            name="completed"
-                            value={typeof task.completed === "boolean" ? (task.completed ? "true" : "false") : "false"}
-                            onChange={(e) => handleInput("completed")(e)}>
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
+                    <select
+                        className="bg-[#F9F9F9] p-2 rounded-md border cursor-pointer text-sm"
+                        name="completed"
+                        value={String(Boolean(task.completed))}
+                        onChange={(e) => {
+                            const isCompleted = e.target.value === "true";
+                            handleInput("completed")({
+                                target: {
+                                    name: "completed",
+                                    value: isCompleted
+                                }
+                            });
+                        }}>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
                     </div>
                 </div>
             </div>
