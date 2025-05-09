@@ -23,7 +23,11 @@ function TaskItem({ task }: TaskItemProps) {
         }
     }
 
-    const { getTask, openModalforEdit, deleteTask, modalMode } = useTasks()
+    const { getTask, openModalforEdit, deleteTask, modalMode, updateTask } = useTasks()
+
+    const toggleCompleted = () => {
+        updateTask({ ...task, completed: !task.completed }, task.useAI);
+    };
   return (
     <div className="h-[16rem] px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white">
         <div>
@@ -38,8 +42,10 @@ function TaskItem({ task }: TaskItemProps) {
             <div>
                 <div className='flex items-center gap-3 text-gray-400 text-[1.2rem]'>
                     <button className={`cursor-pointer ${
-                        task.completed ? "text-yellow-400" : "text-gray-400"
-                    }`} title={task.completed ? "Completed" : "Not Completed"}>
+                        task.completed ? "text-yellow-400" : "text-gray-400" }`} 
+                        title={task.completed ? "Completed" : "Not Completed"}
+                        onClick={toggleCompleted}
+                    >
                         {star}
                     </button>
                     <button 
