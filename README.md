@@ -139,7 +139,7 @@ npm run dev
 
 1. Navigate to the AI service directory:
 ```bash
-cd ai_service
+cd backend
 ```
 
 2. Create a virtual environment:
@@ -155,7 +155,7 @@ pip install -r requirements.txt
 
 4. Start the AI service:
 ```bash
-python src/api/main.py
+uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Running the Application
@@ -216,4 +216,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, email your-email@example.com or open an issue in the repository.
+For support, email ms24901994@my.sliit.lk ms24900690@my.sliit.lk ms24912402@my.sliit.lk ms24900904@my.sliit.lk or open an issue in the repository.
