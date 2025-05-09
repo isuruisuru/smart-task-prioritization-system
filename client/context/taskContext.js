@@ -165,11 +165,9 @@ export const TasksProvider = ({ children }) => {
         try {
             let taskData = { 
                 ...task, 
-                useAI,
-                completed: Boolean(task.completed)
+                useAI
             };
-                 // ensure it's a boolean};
-
+    
             if (useAI) {
                 try {
                     const aiResponse = await axios.post(`${aiServiceUrl}/prioritize-task`, {
@@ -177,7 +175,7 @@ export const TasksProvider = ({ children }) => {
                         description: task.description,
                         due_date: task.dueDate
                     });
-
+    
                     if (aiResponse.data) {
                         taskData.priority = aiResponse.data.priority.toLowerCase();
                         taskData.labels = aiResponse.data.labels;
@@ -187,16 +185,16 @@ export const TasksProvider = ({ children }) => {
                     toast.error('Failed to get AI priority');
                 }
             }
-
+    
             const response = await axios.patch(`${serverUrl}/task/${task._id}`, taskData);
-
+    
             const newTasks = tasks.map((tsk) => {
                 return tsk._id === response.data._id ? response.data : tsk;
             });
-
+    
             setTasks(newTasks);
             toast.success("Task updated successfully");
-
+    
         } catch (error) {
             console.error("Error updating task", error);
             toast.error("Failed to update task");

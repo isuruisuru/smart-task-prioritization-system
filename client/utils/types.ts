@@ -8,6 +8,7 @@ interface Task{
     completed: boolean;
     createdAt: string;
     updatedAt: string;
+    useAI?: boolean;
 }
 
 export type { Task };
