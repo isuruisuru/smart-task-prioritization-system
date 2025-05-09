@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Task Assignment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .task-details {
+            margin: 20px 0;
+        }
+        .task-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 3px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+        .priority-high {
+            color: #dc3545;
+        }
+        .priority-medium {
+            color: #ffc107;
+        }
+        .priority-low {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>New Task Assignment</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{assigneeName}},</p>
+        
+        <p>You have been assigned a new task in the Smart Task Prioritization System.</p>
+        
+        <div class="task-details">
+            <div class="task-item">
+                <h3>{{taskTitle}}</h3>
+                <p><strong>Description:</strong> {{taskDescription}}</p>
+                <p><strong>Priority:</strong> 
+                    <span class="priority-{{toLowerCase taskPriority}}">{{taskPriority}}</span>
+                </p>
+                <p><strong>Start Date:</strong> {{taskStartDate}}</p>
+                <p><strong>Due Date:</strong> {{taskDueDate}}</p>
+            </div>
+        </div>
+        
+        <p>Please review the task details and begin working on it according to the schedule.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message from the Smart Task Prioritization System.</p>
+        <p>Please do not reply to this email.</p>
+    </div>
+</body>
+</html>

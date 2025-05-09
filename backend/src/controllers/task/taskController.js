@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import TaskModel from "../../models/tasks/TaskModel.js";
 import UserModel from "../../models/auth/UserModel.js";
-import sendEmail from "../../helpers/sendEmail.js";
+import sendEmail from "../../utils/sendEmail.js";
 
 export const createTask = asyncHandler(async(req, res) => {
     try {
@@ -42,9 +42,20 @@ export const createTask = asyncHandler(async(req, res) => {
                 const url = `${process.env.CLIENT_URL}/tasks`;
 
                 try {
-                    await sendEmail(subject, send_to, send_from, reply_to, template, name, url);
-                } catch (emailError) {
-                    console.log("Error sending email:", emailError.message);
+                    await sendEmail({
+                        email: send_to,         
+                        subject: subject, 
+                        assigneeName: name,   
+                        task: {                       
+                            title: task.title,
+                            description: task.description,
+                            priority: task.priority,
+                            startDate: task.startDate,
+                            dueDate: task.dueDate
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error in createTask:", error);
                     // Don't return error response as task was created successfully
                 }
             }

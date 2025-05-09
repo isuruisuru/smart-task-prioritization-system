@@ -1,35 +1,64 @@
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
-import { join } from "path";
+import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 import fs from "fs";
 import handlebars from "handlebars";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables from the root .env file
-config();
+const envPaths = [
+    '.env',
+    '../.env',
+    '../../.env',
+    join(__dirname, '.env'),
+    join(__dirname, '../.env'),
+    join(__dirname, '../../.env')
+];
 
-// Debug: Log environment variables and paths
-console.log('Current working directory:', process.cwd());
-console.log('Environment file path:', join(process.cwd(), '.env'));
+let envLoaded = false;
+for (const path of envPaths) {
+    if (fs.existsSync(path)) {
+        config({ path });
+        envLoaded = true;
+        console.log(`Loaded .env from: ${path}`);
+        break;
+    }
+}
+
+if (!envLoaded) {
+    console.error('Could not find .env file!');
+    process.exit(1);
+}
+
+handlebars.registerHelper('toLowerCase', function(str) {
+    return str.toLowerCase();
+});
+
 console.log('Email Configuration:');
-console.log('EMAIL_USER:', process.env.EMAIL_USER);
-console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? 'Password is set' : 'Password is not set');
-console.log('EMAIL_FROM:', process.env.EMAIL_FROM);
+console.log('EMAIL_USER:', process.env.EMAIL_USER || 'Not set');
+console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? '[PRESENT]' : '[MISSING]');
+console.log('EMAIL_FROM:', process.env.EMAIL_FROM || 'Not set');
+
+// Verify required environment variables
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD || !process.env.EMAIL_FROM) {
+    throw new Error('Missing required email environment variables');
+}
 
 // Create transporter with Gmail service
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
-    }
+    },
+    debug: true
 });
 
-// Verify transporter configuration
+
 transporter.verify(function (error, success) {
     if (error) {
         console.log("SMTP connection error:", error);
@@ -40,12 +69,31 @@ transporter.verify(function (error, success) {
 
 const sendEmail = async ({ email, subject, assigneeName, task }) => {
     try {
-        // Read email template
-        const templatePath = join(__dirname, '../../templates/emailTemplate.html');
+        if (!email || !subject || !assigneeName || !task) {
+            throw new Error('Missing required parameters for sending email');
+        }
+
+        console.log('Sending email with data:', {
+            to: email,
+            subject,
+            assigneeName,
+            task: {
+                ...task,
+                startDate: new Date(task.startDate).toISOString(),
+                dueDate: new Date(task.dueDate).toISOString()
+            }
+        });
+
+        const templatePath = join(__dirname, '../views/emailTemplate.handlebars');
+        console.log('Template path:', templatePath);
+
+        if (!fs.existsSync(templatePath)) {
+            throw new Error(`Email template not found at path: ${templatePath}`);
+        }
+
         const source = fs.readFileSync(templatePath, 'utf-8');
         const template = handlebars.compile(source);
 
-        // Prepare template data
         const templateData = {
             assigneeName,
             taskTitle: task.title,
@@ -55,23 +103,26 @@ const sendEmail = async ({ email, subject, assigneeName, task }) => {
             taskDueDate: new Date(task.dueDate).toLocaleDateString()
         };
 
-        // Generate HTML
         const html = template(templateData);
 
-        // Email options
         const mailOptions = {
-            from: process.env.EMAIL_FROM,
+            from: {
+                name: "Smart Task Prioritization System",
+                address: process.env.EMAIL_FROM
+            },
             to: email,
             subject,
             html
         };
 
-        // Send email
         const info = await transporter.sendMail(mailOptions);
         console.log("Email sent successfully:", info.messageId);
         return info;
     } catch (error) {
         console.error("Error sending email:", error);
+        if (error.response) {
+            console.error("SMTP Response:", error.response);
+        }
         throw error;
     }
 };
