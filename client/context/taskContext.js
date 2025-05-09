@@ -163,7 +163,12 @@ export const TasksProvider = ({ children }) => {
     const updateTask = async (task, useAI) => {
         setLoading(true);
         try {
-            let taskData = { ...task, useAI };
+            let taskData = { 
+                ...task, 
+                useAI,
+                completed: Boolean(task.completed)
+            };
+                 // ensure it's a boolean};
 
             if (useAI) {
                 try {
@@ -225,11 +230,16 @@ export const TasksProvider = ({ children }) => {
             };
             setTask(taskData);
         } else {
-            // Special handling for assignee to ensure it's not reset
+            // Special handling for assignee and completed fields
             if (name === 'assignee') {
                 setTask(prev => ({
                     ...prev,
                     assignee: e.target.value
+                }));
+            } else if (name === 'completed') {
+                setTask(prev => ({
+                    ...prev,
+                    completed: typeof e.target.value === 'boolean' ? e.target.value : e.target.value === 'true'
                 }));
             } else {
                 setTask(prev => ({
