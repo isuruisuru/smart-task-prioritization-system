@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: your-dockerhub-username/smart-task-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://${AWS_PUBLIC_IP}:8001
+      - NEXT_PUBLIC_AI_SERVICE_URL=http://${AWS_PUBLIC_IP}:8000
+    depends_on:
+      - backend
+      - ai-service
+
+  backend:
+    image: your-dockerhub-username/smart-task-backend:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=8001
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - CLIENT_URL=http://${AWS_PUBLIC_IP}:3000
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  ai-service:
+    image: your-dockerhub-username/smart-task-ai-service:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data: 
