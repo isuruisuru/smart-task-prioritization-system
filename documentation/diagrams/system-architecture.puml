@@ -1,0 +1,73 @@
+@startuml Smart Task Prioritization System
+
+!define RECTANGLE class
+
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam handwritten false
+
+' Main Components
+package "Frontend" {
+    [Next.js Application] as frontend
+    [React Context] as context
+    [Tailwind CSS] as tailwind
+    [Axios Client] as axios
+}
+
+package "Backend" {
+    [Express.js Server] as backend
+    [JWT Authentication] as jwt
+    [MongoDB Models] as models
+    [Email Service] as email
+}
+
+package "AI Service" {
+    [FastAPI Service] as ai
+    [OpenAI Integration] as openai
+    [Task Prioritizer] as prioritizer
+}
+
+database "MongoDB" {
+    [User Collection] as users
+    [Task Collection] as tasks
+}
+
+' External Services
+cloud "Email Provider" as smtp
+cloud "OpenAI API" as openai_api
+
+' Relationships
+frontend --> backend : HTTP/HTTPS
+frontend --> ai : HTTP/HTTPS
+backend --> models : Uses
+backend --> jwt : Uses
+backend --> email : Uses
+backend --> users : CRUD
+backend --> tasks : CRUD
+ai --> openai : Uses
+ai --> prioritizer : Uses
+email --> smtp : SMTP
+openai --> openai_api : API Calls
+
+' Component Details
+note right of frontend
+  - Next.js 14
+  - React 19
+  - TypeScript
+  - Tailwind CSS
+end note
+
+note right of backend
+  - Express.js
+  - Node.js
+  - JWT Auth
+  - Nodemailer
+end note
+
+note right of ai
+  - FastAPI
+  - Python 3.8
+  - OpenAI GPT
+end note
+
+@enduml

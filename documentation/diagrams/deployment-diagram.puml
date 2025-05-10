@@ -1,0 +1,58 @@
+@startuml
+
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam handwritten false
+
+title Smart Task Prioritization System - Deployment Diagram
+
+cloud AWS {
+    node "EC2 Instance" {
+        package "Docker Containers" {
+            [Frontend Container\nReact/Next.js + Nginx\nPort: 3000] as Frontend
+            [Backend Container\nNode.js/Express\nPort: 8001] as Backend
+            [AI Service Container\nNode.js\nPort: 8000] as AIService
+            database "MongoDB Container\nPort: 27017" as MongoDB
+        }
+    }
+}
+
+cloud "External Services" {
+    [Docker Hub] as DockerHub
+    [GitHub] as GitHub
+    [OpenAI API] as OpenAIAPI
+    [SMTP Server\n(Gmail/Other)] as SMTP
+}
+
+' Internal Communication
+Frontend --> Backend : "Internal HTTP\n(backend:8001)"
+Backend --> AIService : "Internal HTTP\n(ai-service:8000)"
+Backend --> MongoDB : "Internal DB Connection\n(mongo:27017)"
+AIService --> OpenAIAPI : "External API Calls"
+Backend --> SMTP : "Email Service\n(SMTP:465)"
+
+' External Access
+note right of Frontend
+  External Access:
+  http://AWS_IP:3000
+end note
+
+note right of Backend
+  External Access:
+  http://AWS_IP:8001
+  Email Config:
+  - SMTP Host
+  - Port: 465
+  - SSL/TLS
+end note
+
+note right of AIService
+  External Access:
+  http://AWS_IP:8000
+end note
+
+' CI/CD Flow
+GitHub --> DockerHub : "Push Images"
+DockerHub --> "EC2 Instance" : "Pull Images"
+
+@enduml
