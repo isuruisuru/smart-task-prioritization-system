@@ -1,6 +1,6 @@
 # Automated Build Script for Smart Task Prioritization System
 
-This repository includes an automated build script (`build.sh`) to simplify the setup and execution of the **Smart Task Prioritization System**. The script replaces the manual setup process outlined in the main README file, automating the installation of dependencies and starting all necessary services.
+This repository includes an automated project_setup_automation script (`project_setup_automation.sh`) to simplify the setup and execution of the **Smart Task Prioritization System**. The script replaces the manual setup process outlined in the main README file, automating the installation of dependencies and starting all necessary services.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ Before running the script, ensure the following software is installed on your sy
 
 ## Script Overview
 
-The `build.sh` script performs the following steps:
+The `project_setup_automation.sh` script performs the following steps:
 1. Clones the repository (if not already cloned).
 2. Sets up the backend:
    - Installs dependencies.
@@ -29,9 +29,9 @@ The `build.sh` script performs the following steps:
 ## Instructions
 
 ### Step 1: Download the Script
-Save the script below as `build.sh` in your desired directory.
+Save the script below as `project_setup_automation.sh` in your desired directory.
 
-```bash name=build.sh
+```bash name=project_setup_automation.sh
 #!/bin/bash
 
 echo "Starting the Smart Task Prioritization System setup..."
@@ -121,7 +121,7 @@ fi
 
 # Start AI Service
 echo "Starting the AI service..."
-python src/api/main.py &
+uvicorn src.api.main:app --reload &
 
 cd ..
 
@@ -131,13 +131,13 @@ echo "Setup complete! Access the application at http://localhost:3000"
 ### Step 2: Make the Script Executable
 Run the following command to give the script execution permissions:
 ```bash
-chmod +x build.sh
+chmod +x project_setup_automation.sh
 ```
 
 ### Step 3: Execute the Script
 Run the script with the following command:
 ```bash
-./build.sh
+./project_setup_automation.sh
 ```
 
 ## Notes
